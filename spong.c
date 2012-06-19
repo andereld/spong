@@ -22,7 +22,7 @@ int main()
 		h: W_HEIGHT,
 		upperWall: { x: 0, y: 0, w: C_WIDTH, h: wt },
 		lowerWall: { x: 0, y: C_HEIGHT-wt, w: C_WIDTH, h: wt },
-		SDL_MapRGB(screen->format, 0, 0, 0)
+		color: SDL_MapRGB(screen->format, 0, 0, 0)
 	};
 	SDL_FillRect(screen, &court.upperWall, court.color);
 	SDL_FillRect(screen, &court.lowerWall, court.color);
