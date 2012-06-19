@@ -19,12 +19,29 @@ int main()
 			y: 0,
 			w: W_WIDTH,
 			h: W_HEIGHT,
-			upperWall: { x: 0, y: 0, w: W_WIDTH, h: wt },
-			lowerWall: { x: 0, y: W_HEIGHT-wt, w: W_WIDTH, h: wt },
+			upperWall: { x: 0, y: 0, w: C_WIDTH, h: wt },
+			lowerWall: { x: 0, y: C_HEIGHT-wt, w: C_WIDTH, h: wt },
 			SDL_MapRGB(screen->format, 0, 0, 0)
 	};
 	SDL_FillRect(screen, &court.upperWall, court.color);
 	SDL_FillRect(screen, &court.lowerWall, court.color);
+
+	/* set up the players and their paddles */
+	Player player1 = {
+		paddle: {
+			vy: P_SPEED,
+			rect: {
+				x: 0,
+				y: C_HEIGHT/2 - P_HEIGHT/2,
+				w: P_WIDTH,
+				h: P_HEIGHT
+			},
+			color: SDL_MapRGB(screen->format, 0, 0, 0)
+		},
+		points: 0
+	};
+	Player player2 = player1;
+	player2.paddle.rect.x = C_WIDTH - P_WIDTH;
 
 	Uint32 startTime;	/* used to note the beginning of each
 				   iteration of the main event loop */
@@ -48,6 +65,12 @@ int main()
 			}
 
 		}
+
+		/* draw the paddles */
+		SDL_FillRect(screen, &player1.paddle.rect,
+				player1.paddle.color);
+		SDL_FillRect(screen, &player2.paddle.rect,
+				player2.paddle.color);
 
 		/* render frame to screen */
 		SDL_Flip(screen);

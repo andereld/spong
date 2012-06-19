@@ -11,6 +11,16 @@
 #define W_WIDTH 800	/* the width of the main window */
 #define W_HEIGHT 480	/* the height of the main window */
 
+#define C_WIDTH 800	/* the width of the playing court */
+#define C_HEIGHT 480	/* the height of the playing court */
+
+#define P_WIDTH 20	/* the width of a paddle */
+#define P_HEIGHT 40	/* the height of a paddle */
+#define P_SPEED 10	/* the possible number of pixels a paddle can move
+			   in the duration of one frame */
+
+#define B_SIZE 20	/* the width and height of the ball */
+
 #define FPS 30				/* frames per second */
 #define FRAME_DURATION ((int) 1000/FPS)	/* the duration of a frame in ms */
 
@@ -27,15 +37,15 @@ typedef struct Ball {
 	Uint32 color;	/* the color of the ball */
 } Ball;
 
-typedef struct Racket {
-	Sint8 vy;	/* the vertical velocity of the racket;
-			   a racket does not move horizontally */
-	SDL_Rect rect;	/* the size and position of the racket */
-	Uint32 color;	/* the color of the racket */
-} Racket;
+typedef struct Paddle {
+	Sint8 vy;	/* the vertical velocity of the paddle;
+			   a paddle does not move horizontally */
+	SDL_Rect rect;	/* the size and position of the paddle */
+	Uint32 color;	/* the color of the paddle */
+} Paddle;
 
 typedef struct Player {
-	Racket racket;	/* a player controls a Racket ... */
+	Paddle paddle;	/* a player controls a Paddle ... */
 	Uint8 points;	/* ... and has a number of points */
 } Player;
 
