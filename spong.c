@@ -29,7 +29,6 @@ int main()
 	/* set up the players and their paddles */
 	Player player1 = {
 		paddle: {
-			vy: P_SPEED,
 			rect: {
 				x: 0,
 				y: C_HEIGHT/2 - P_HEIGHT/2,
@@ -43,11 +42,27 @@ int main()
 	Player player2 = player1;
 	player2.paddle.rect.x = C_WIDTH - P_WIDTH;
 
+	/* set up the player controls; these need to be #defines to satisfy
+	   the compiler's idea of an 'integer constant' */
+#define P1_UP_KEY SDLK_a
+#define P1_DOWN_KEY SDLK_z
+#define P2_UP_KEY SDLK_i
+#define P2_DOWN_KEY SDLK_PERIOD
+	/* because SDL_KEY(UP|DOWN) only occur once, not continuously while
+	   the key is pressed, we need to keep track of whether a key is
+	   (still) pressed */
+	bool player1ShouldMoveUp = false, player1ShouldMoveDown = false,
+	     player2ShouldMoveUp = false, player2ShouldMoveDown = false;
+
 	Uint32 startTime;	/* used to note the beginning of each
 				   iteration of the main event loop */
 	bool running = true;	/* true till the application should exit */
 	while (running) {
 		startTime = SDL_GetTicks();
+
+		/* overwrite the previous frame's paddles */
+		SDL_FillRect(screen, &player1.paddle.rect, clearColor);
+		SDL_FillRect(screen, &player2.paddle.rect, clearColor);
 
 		SDL_Event event;
 		while (SDL_PollEvent(&event)) {
@@ -60,11 +75,49 @@ int main()
 				case SDLK_q:
 					running = false;
 					break;
+
+				case P1_UP_KEY:
+					player1ShouldMoveUp = true;
+					break;
+				case P1_DOWN_KEY:
+					player1ShouldMoveDown = true;
+					break;
+				case P2_UP_KEY:
+					player2ShouldMoveUp = true;
+					break;
+				case P2_DOWN_KEY:
+					player2ShouldMoveDown = true;
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+				switch (event.key.keysym.sym) {
+				case P1_UP_KEY:
+					player1ShouldMoveUp = false;
+					break;
+				case P1_DOWN_KEY:
+					player1ShouldMoveDown = false;
+					break;
+				case P2_UP_KEY:
+					player2ShouldMoveUp = false;
+					break;
+				case P2_DOWN_KEY:
+					player2ShouldMoveDown = false;
+					break;
 				}
 				break;
 			}
 
 		}
+
+		if (player1ShouldMoveUp)
+			player1.paddle.rect.y -= P_SPEED;
+		else if (player1ShouldMoveDown)
+			player1.paddle.rect.y += P_SPEED;
+		if (player2ShouldMoveUp)
+			player2.paddle.rect.y -= P_SPEED;
+		else if (player2ShouldMoveDown)
+			player2.paddle.rect.y += P_SPEED;
 
 		/* draw the paddles */
 		SDL_FillRect(screen, &player1.paddle.rect,

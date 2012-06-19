@@ -16,7 +16,7 @@
 
 #define P_WIDTH 20	/* the width of a paddle */
 #define P_HEIGHT 40	/* the height of a paddle */
-#define P_SPEED 10	/* the possible number of pixels a paddle can move
+#define P_SPEED 10	/* the number of pixels a paddle moves
 			   in the duration of one frame */
 
 #define B_SIZE 20	/* the width and height of the ball */
@@ -38,8 +38,6 @@ typedef struct Ball {
 } Ball;
 
 typedef struct Paddle {
-	Sint8 vy;	/* the vertical velocity of the paddle;
-			   a paddle does not move horizontally */
 	SDL_Rect rect;	/* the size and position of the paddle */
 	Uint32 color;	/* the color of the paddle */
 } Paddle;
