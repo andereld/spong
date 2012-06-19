@@ -8,8 +8,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define W_WIDTH 800			/* the width of the main window */
-#define W_HEIGHT 480			/* the height of the main window */
+#define W_WIDTH 800	/* the width of the main window */
+#define W_HEIGHT 480	/* the height of the main window */
 
 #define FPS 30				/* frames per second */
 #define FRAME_DURATION ((int) 1000/FPS)	/* the duration of a frame in ms */
@@ -18,6 +18,7 @@ typedef struct Court {
 	Uint16 x, y;			/* position of the upper left corner */
 	Uint16 w, h;			/* width and height */
 	SDL_Rect upperWall, lowerWall;	/* the walls of the court */
+	Uint32 color;			/* the color of the walls */
 } Court;
 
 typedef struct Ball {
