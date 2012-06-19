@@ -15,13 +15,14 @@ int main()
 
 	/* set up the playing court */
 	Uint8 wt = 30;	/* the thickness of the court's walls */
-	Court court = {	x: 0,
-			y: 0,
-			w: W_WIDTH,
-			h: W_HEIGHT,
-			upperWall: { x: 0, y: 0, w: C_WIDTH, h: wt },
-			lowerWall: { x: 0, y: C_HEIGHT-wt, w: C_WIDTH, h: wt },
-			SDL_MapRGB(screen->format, 0, 0, 0)
+	Court court = {
+		x: 0,
+		y: 0,
+		w: W_WIDTH,
+		h: W_HEIGHT,
+		upperWall: { x: 0, y: 0, w: C_WIDTH, h: wt },
+		lowerWall: { x: 0, y: C_HEIGHT-wt, w: C_WIDTH, h: wt },
+		SDL_MapRGB(screen->format, 0, 0, 0)
 	};
 	SDL_FillRect(screen, &court.upperWall, court.color);
 	SDL_FillRect(screen, &court.lowerWall, court.color);
