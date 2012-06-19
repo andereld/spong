@@ -8,15 +8,16 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#define W_WIDTH 800	/* the width of the main window */
-#define W_HEIGHT 480	/* the height of the main window */
+#define W_WIDTH 800		/* the width of the main window */
+#define W_HEIGHT 480		/* the height of the main window */
+#define W_COLOR_DEPTH 32	/* the number of bits per pixel */
 
 #define C_WIDTH 800	/* the width of the playing court */
 #define C_HEIGHT 480	/* the height of the playing court */
 
 #define P_WIDTH 20	/* the width of a paddle */
 #define P_HEIGHT 40	/* the height of a paddle */
-#define P_SPEED 10	/* the number of pixels a paddle moves
+#define P_STEP 10	/* the number of pixels a paddle moves
 			   in the duration of one frame */
 
 #define B_SIZE 20	/* the width and height of the ball */
@@ -46,5 +47,12 @@ typedef struct Player {
 	Paddle paddle;	/* a player controls a Paddle ... */
 	Uint8 points;	/* ... and has a number of points */
 } Player;
+
+typedef enum Direction {
+	UP,
+	DOWN
+} Direction;
+
+void movePaddle(Court *court, Paddle *paddle, Direction direction);
 
 #endif

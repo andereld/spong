@@ -6,8 +6,8 @@ int main()
 	TTF_Init();
 
 	/* the frame buffer */
-	SDL_Surface *screen = SDL_SetVideoMode(W_WIDTH, W_HEIGHT, 32,
-			SDL_SWSURFACE);
+	SDL_Surface *screen = SDL_SetVideoMode(W_WIDTH, W_HEIGHT,
+			W_COLOR_DEPTH, SDL_SWSURFACE);
 
 	/* the background color of the screen */
 	Uint32 clearColor = SDL_MapRGB(screen->format, 0xFF, 0xFF, 0xFF);
@@ -111,13 +111,13 @@ int main()
 		}
 
 		if (player1ShouldMoveUp)
-			player1.paddle.rect.y -= P_SPEED;
+			movePaddle(&court, &player1.paddle, UP);
 		else if (player1ShouldMoveDown)
-			player1.paddle.rect.y += P_SPEED;
+			movePaddle(&court, &player1.paddle, DOWN);
 		if (player2ShouldMoveUp)
-			player2.paddle.rect.y -= P_SPEED;
+			movePaddle(&court, &player2.paddle, UP);
 		else if (player2ShouldMoveDown)
-			player2.paddle.rect.y += P_SPEED;
+			movePaddle(&court, &player2.paddle, DOWN);
 
 		/* draw the paddles */
 		SDL_FillRect(screen, &player1.paddle.rect,
@@ -138,4 +138,21 @@ int main()
 	SDL_Quit();
 
 	return EXIT_SUCCESS;
+}
+
+void movePaddle(Court *court, Paddle *paddle, Direction direction)
+{
+	if (direction == UP) {
+		Uint32 upperBound = court->y + court->upperWall.h;
+		if (paddle->rect.y > upperBound+P_STEP)
+			paddle->rect.y -= P_STEP;
+		else
+			paddle->rect.y = court->y + court->upperWall.h;
+	} else if (direction == DOWN) {
+		Uint32 lowerBound = court->y + court->h - court->lowerWall.h;
+		if (paddle->rect.y+paddle->rect.h < lowerBound-P_STEP)
+			paddle->rect.y += P_STEP;
+		else
+			paddle->rect.y = lowerBound - paddle->rect.h;
+	}
 }
