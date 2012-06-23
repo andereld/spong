@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -lSDL -lSDL_mixer -lSDL_ttf
+CFLAGS = `sdl-config --cflags --libs` -lSDL_mixer -lSDL_ttf
 
 .DEFAULT: spong
 

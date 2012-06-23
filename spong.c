@@ -1,6 +1,6 @@
 #include "spong.h"
 
-int main()
+int main(int argc, char *argv[])
 {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
@@ -18,8 +18,8 @@ int main()
 	Court court = {
 		x: 0,
 		y: 0,
-		w: W_WIDTH,
-		h: W_HEIGHT,
+		w: C_WIDTH,
+		h: C_HEIGHT,
 		upperWall: { x: 0, y: 0, w: C_WIDTH, h: wt },
 		lowerWall: { x: 0, y: C_HEIGHT-wt, w: C_WIDTH, h: wt },
 		color: SDL_MapRGB(screen->format, 0, 0, 0)
