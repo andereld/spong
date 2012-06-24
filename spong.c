@@ -2,12 +2,14 @@
 
 int main(int argc, char *argv[])
 {
-	SDL_Init(SDL_INIT_EVERYTHING);
-	TTF_Init();
+	/* initialize SDL and its subsystems */
+	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) die();
+	if (TTF_Init() == -1) die();
 
 	/* the frame buffer */
 	SDL_Surface *screen = SDL_SetVideoMode(W_WIDTH, W_HEIGHT,
 			W_COLOR_DEPTH, SDL_SWSURFACE);
+	if (!screen) die();
 
 	/* the background color of the screen */
 	const Uint32 clearColor = SDL_MapRGB(screen->format, 0xFF, 0xFF, 0xFF);
@@ -15,10 +17,12 @@ int main(int argc, char *argv[])
 
 	/* set up the playing court */
 	Court *court = makeCourt(screen);
+	if (!court) die();
 
 	/* set up the players and their paddles */
 	Player *player1 = makePlayer(screen);
 	Player *player2 = makePlayer(screen);
+	if (!player1 || !player2) die();
 	player2->paddle.rect.x = C_WIDTH - P_WIDTH;
 
 	/* set up the player controls; these need to be #defines to satisfy
@@ -95,6 +99,7 @@ Court *makeCourt(SDL_Surface *screen)
 	const Uint8 wt = 30;
 
 	Court *court = malloc(sizeof(Court));
+
 	court->x = 0;
 	court->y = 0;
 	court->w = C_WIDTH;
@@ -124,7 +129,6 @@ Player *makePlayer(SDL_Surface *screen)
 
 	/* make the leftmost player (x = 0) by default */
 	player->paddle.rect.x = 0;
-
 	player->paddle.rect.y = C_HEIGHT/2 - P_HEIGHT/2;
 	player->paddle.rect.w = P_WIDTH;
 	player->paddle.rect.h = P_HEIGHT;
@@ -200,4 +204,13 @@ void movePaddle(Court *court, Paddle *paddle, Direction direction)
 		else
 			paddle->rect.y = lowerBound - paddle->rect.h;
 	}
+}
+
+inline void die()
+{
+	if (strcmp(SDL_GetError(), "") != 0)
+		fprintf(stderr, "spong: %s\n", SDL_GetError());
+	if (errno)
+		perror("spong: ");
+	exit(1);
 }

@@ -5,7 +5,9 @@
 #include <SDL/SDL_mixer.h>
 #include <SDL/SDL_ttf.h>
 
+#include <errno.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #define W_WIDTH 800		/* the width of the main window */
@@ -69,5 +71,8 @@ void readPlayerInput(bool *running,
 
 /* move a player's paddle */
 void movePaddle(Court *court, Paddle *paddle, Direction direction);
+
+/* print any errors and exit with a non-zero return status */
+void die();
 
 #endif
