@@ -44,7 +44,7 @@
 #define B_SIZE (C_WIDTH/60)	/* the width and height of the ball */
 #define B_VX (C_WIDTH/80)	/* the horizontal speed of the ball */
 
-#define FONT_SIZE (C_WIDTH/12)	/* font size */
+#define FONT_SIZE (C_WIDTH/12)	/* point size */
 #define F_WIDTH (C_WIDTH/8)	/* for the SDL_Surface holding the text */
 #define F_HEIGHT (C_WIDTH/8)	/* for the SDL_Surface holding the text */
 
@@ -97,8 +97,8 @@ Ball *makeBall(SDL_Surface *screen);
 
 /* read input from the keyboard and set the appropriate flags */
 void readPlayerInput(bool *running,
-		bool *player1ShouldMoveUp, bool *player1ShouldMoveDown,
-		bool *player2ShouldMoveUp, bool *player2ShouldMoveDown);
+		bool *lPlayerShouldMoveUp, bool *lPlayerShouldMoveDown,
+		bool *rPlayerShouldMoveUp, bool *rPlayerShouldMoveDown);
 
 /* move a player's paddle */
 void movePaddle(Court *court, Paddle *paddle, Direction direction);
