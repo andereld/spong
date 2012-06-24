@@ -44,7 +44,7 @@ typedef struct Paddle {
 } Paddle;
 
 typedef struct Player {
-	Paddle paddle;	/* a player controls a Paddle ... */
+	Paddle paddle;	/* a player controls a paddle ... */
 	Uint8 points;	/* ... and has a number of points */
 } Player;
 
@@ -53,6 +53,21 @@ typedef enum Direction {
 	DOWN
 } Direction;
 
+/* clear the screen to its background color */
+void clearScreen(SDL_Surface *screen, Uint32 clearColor);
+
+/* initialize and draw the playing court */
+Court *makeCourt(SDL_Surface *screen);
+
+/* initialize a player */
+Player *makePlayer(SDL_Surface *screen);
+
+/* read input from the keyboard and set the appropriate flags */
+void readPlayerInput(bool *running,
+		bool *player1ShouldMoveUp, bool *player1ShouldMoveDown,
+		bool *player2ShouldMoveUp, bool *player2ShouldMoveDown);
+
+/* move a player's paddle */
 void movePaddle(Court *court, Paddle *paddle, Direction direction);
 
 #endif
