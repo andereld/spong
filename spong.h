@@ -10,22 +10,43 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define W_WIDTH 800		/* the width of the main window */
-#define W_HEIGHT 480		/* the height of the main window */
+/* COLORS */
+/* Uint32s */
+#define CLEAR_COLOR(format)	SDL_MapRGB(format, 0xFF, 0xFF, 0xFF)
+#define WALL_COLOR(format)	SDL_MapRGB(format, 0, 0, 0)
+#define PADDLE_COLOR(format)	SDL_MapRGB(format, 0, 0, 0)
+#define BALL_COLOR(format)	SDL_MapRGB(format, 0, 0, 0)
+/* SDL_Colors */
+#define FONT_COLOR		{ r: 0, g: 0, b: 0 }
+
+/* CONTROLS */
+#define QUIT_KEY		SDLK_q
+#define LPLAYER_UP_KEY		SDLK_a
+#define LPLAYER_DOWN_KEY	SDLK_z
+#define RPLAYER_UP_KEY		SDLK_i
+#define RPLAYER_DOWN_KEY	SDLK_PERIOD
+
+#define W_WIDTH 1280		/* the width of the main window */
+#define W_HEIGHT 800		/* the height of the main window */
 #define W_COLOR_DEPTH 32	/* the number of bits per pixel */
 
-#define C_X 0		/* the leftmost coordinate of the court */
-#define C_Y 0		/* the upper coordinate of the court */
-#define C_WIDTH 800	/* the width of the playing court */
-#define C_HEIGHT 480	/* the height of the playing court */
+#define C_X 0			/* the leftmost coordinate of the court */
+#define C_Y 0			/* the upper coordinate of the court */
+#define C_WIDTH W_WIDTH		/* the width of the court */
+#define C_HEIGHT W_HEIGHT	/* the height of the court */
+#define C_WALL (C_HEIGHT/25)	/* the thickness of the walls */
 
-#define P_WIDTH 20	/* the width of a paddle */
-#define P_HEIGHT 60	/* the height of a paddle */
-#define P_STEP 10	/* the number of pixels a paddle moves
-			   in the duration of one frame */
+#define P_WIDTH (C_WIDTH/60)	/* the width of a paddle */
+#define P_HEIGHT (C_HEIGHT/8)	/* the height of a paddle */
+#define P_STEP (C_HEIGHT/48)	/* the number of pixels a paddle moves
+			   	   in the duration of one frame */
 
-#define B_SIZE 20	/* the width and height of the ball */
-#define B_VX 10		/* the horizontal speed of the ball */
+#define B_SIZE (C_WIDTH/60)	/* the width and height of the ball */
+#define B_VX (C_WIDTH/80)	/* the horizontal speed of the ball */
+
+#define FONT_SIZE (C_WIDTH/12)	/* font size */
+#define F_WIDTH (C_WIDTH/8)	/* for the SDL_Surface holding the text */
+#define F_HEIGHT (C_WIDTH/8)	/* for the SDL_Surface holding the text */
 
 #define FPS 30				/* frames per second */
 #define FRAME_DURATION ((int) 1000/FPS)	/* the duration of a frame in ms */

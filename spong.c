@@ -11,9 +11,32 @@ int main(int argc, char *argv[])
 			W_COLOR_DEPTH, SDL_SWSURFACE);
 	if (!screen) die();
 
+	/* hide the mouse cursor */
+	SDL_ShowCursor(SDL_DISABLE);
+
 	/* the background color of the screen */
-	const Uint32 clearColor = SDL_MapRGB(screen->format, 0xFF, 0xFF, 0xFF);
+	const Uint32 clearColor = CLEAR_COLOR(screen->format);
 	clearScreen(screen, clearColor);
+
+	/* clearColor as an SDL_Color, for use with TTF */
+	Uint8 r, g, b;
+	SDL_GetRGB(clearColor, screen->format, &r, &g, &b);
+	SDL_Color bgColor = { r: r, g: g, b: b };
+
+	/* the score font */
+	TTF_Font *font = TTF_OpenFont("resources/VeraMono.ttf", FONT_SIZE);
+	if (!font) die();
+	SDL_Color fontColor = FONT_COLOR;
+
+	/* the score text; we'll allow three digits plus the terminating '\0' */
+	char *lScoreStr = malloc(sizeof(char) * 4);
+	char *rScoreStr = malloc(sizeof(char) * 4);
+	if (!lScoreStr || !rScoreStr) die();
+	SDL_Surface *lScore = NULL, *rScore = NULL;
+	SDL_Rect lScorePos = { x: C_X+FONT_SIZE, y: C_HEIGHT/5,
+		w: F_WIDTH, h: F_HEIGHT };
+	SDL_Rect rScorePos = { x: (C_X+C_WIDTH)-3*FONT_SIZE, y: C_HEIGHT/5,
+		w: F_WIDTH, h: F_HEIGHT };
 
 	/* set up the playing court */
 	Court *court = makeCourt(screen);
@@ -29,13 +52,7 @@ int main(int argc, char *argv[])
 	Ball *ball = makeBall(screen);
 	if (!ball) die();
 
-	/* set up the player controls; these need to be #defines to satisfy
-	   the compiler's idea of an 'integer constant' in a switch statement */
-#define P1_UP_KEY SDLK_a
-#define P1_DOWN_KEY SDLK_z
-#define P2_UP_KEY SDLK_i
-#define P2_DOWN_KEY SDLK_PERIOD
-	/* because SDL_KEY(UP|DOWN) only occur once, not continuously while
+	/* because SDL_KEY(UP|DOWN) occurs only once, not continuously while
 	   the key is pressed, we need to keep track of whether a key is
 	   (still) pressed */
 	bool lPlayerShouldMoveUp = false, lPlayerShouldMoveDown = false,
@@ -51,6 +68,10 @@ int main(int argc, char *argv[])
 		SDL_FillRect(screen, &lPlayer->paddle.rect, clearColor);
 		SDL_FillRect(screen, &rPlayer->paddle.rect, clearColor);
 		SDL_FillRect(screen, &ball->rect, clearColor);
+
+		/* clear the previous frame's score */
+		SDL_FillRect(screen, &lScorePos, clearColor);
+		SDL_FillRect(screen, &rScorePos, clearColor);
 
 		/* redraw the walls in case they were clipped by the ball
 		   in a previous frame */
@@ -79,6 +100,20 @@ int main(int argc, char *argv[])
 		/* move the ball */
 		moveBall(court, ball, lPlayer, rPlayer);
 
+		/* update the score */
+		if (lScore) SDL_FreeSurface(lScore);
+		snprintf(lScoreStr, 4, "%2d", lPlayer->points);
+		lScore = TTF_RenderText_Shaded(font, lScoreStr, fontColor,
+				bgColor);
+		if (rScore) SDL_FreeSurface(rScore);
+		snprintf(rScoreStr, 4, "%2d", rPlayer->points);
+		rScore = TTF_RenderText_Shaded(font, rScoreStr, fontColor,
+				bgColor);
+
+		/* draw the score */
+		SDL_BlitSurface(lScore, NULL, screen, &lScorePos);
+		SDL_BlitSurface(rScore, NULL, screen, &rScorePos);
+
 		/* draw the paddles */
 		SDL_FillRect(screen, &lPlayer->paddle.rect,
 				lPlayer->paddle.color);
@@ -97,15 +132,18 @@ int main(int argc, char *argv[])
 			SDL_Delay(FRAME_DURATION - elapsedTime);
 	}
 
-	printf("L: %d, R: %d\n", lPlayer->points, rPlayer->points);
-
 	/* free resources */
+	free(lScoreStr);
+	free(rScoreStr);
 	free(court);
 	free(lPlayer);
 	free(rPlayer);
 	free(ball);
 
+	TTF_CloseFont(font);
 	TTF_Quit();
+	SDL_FreeSurface(lScore);
+	SDL_FreeSurface(rScore);
 	SDL_Quit();
 
 	return EXIT_SUCCESS;
@@ -118,9 +156,6 @@ inline void clearScreen(SDL_Surface *screen, Uint32 clearColor)
 
 Court *makeCourt(SDL_Surface *screen)
 {
-	/* the thickness of the court's walls */
-	const Uint8 wt = 30;
-
 	Court *court = malloc(sizeof(Court));
 
 	court->x = C_X;
@@ -131,14 +166,14 @@ Court *makeCourt(SDL_Surface *screen)
 	court->upperWall.x = C_X;
 	court->upperWall.y = C_Y;
 	court->upperWall.w = C_WIDTH;
-	court->upperWall.h = wt;
+	court->upperWall.h = C_WALL;
 
 	court->lowerWall.x = C_X;
-	court->lowerWall.y = C_Y + C_HEIGHT - wt;
+	court->lowerWall.y = C_Y + C_HEIGHT - C_WALL;
 	court->lowerWall.w = C_WIDTH;
-	court->lowerWall.h = wt;
+	court->lowerWall.h = C_WALL;
 
-	court->color = SDL_MapRGB(screen->format, 0, 0, 0);
+	court->color = WALL_COLOR(screen->format);
 
 	SDL_FillRect(screen, &court->upperWall, court->color);
 	SDL_FillRect(screen, &court->lowerWall, court->color);
@@ -156,7 +191,7 @@ Player *makePlayer(SDL_Surface *screen)
 	player->paddle.prevY = player->paddle.rect.y;
 	player->paddle.rect.w = P_WIDTH;
 	player->paddle.rect.h = P_HEIGHT;
-	player->paddle.color = SDL_MapRGB(screen->format, 0, 0, 0);
+	player->paddle.color = PADDLE_COLOR(screen->format);
 	player->points = 0;
 
 	return player;
@@ -170,7 +205,7 @@ Ball *makeBall(SDL_Surface *screen)
 	ball->rect.y = (C_Y+C_HEIGHT)/2 - B_SIZE/2;
 	ball->rect.w = B_SIZE;
 	ball->rect.h = B_SIZE;
-	ball->color = SDL_MapRGB(screen->format, 0, 0, 0);
+	ball->color = BALL_COLOR(screen->format);
 
 	ball->vx = B_VX;
 	ball->vy = 0;
@@ -190,36 +225,36 @@ void readPlayerInput(bool *running,
 			break;
 		case SDL_KEYDOWN:
 			switch (event.key.keysym.sym) {
-			case SDLK_q:
+			case QUIT_KEY:
 				*running = false;
 				break;
 
-			case P1_UP_KEY:
+			case LPLAYER_UP_KEY:
 				*lPlayerShouldMoveUp = true;
 				break;
-			case P1_DOWN_KEY:
+			case LPLAYER_DOWN_KEY:
 				*lPlayerShouldMoveDown = true;
 				break;
-			case P2_UP_KEY:
+			case RPLAYER_UP_KEY:
 				*rPlayerShouldMoveUp = true;
 				break;
-			case P2_DOWN_KEY:
+			case RPLAYER_DOWN_KEY:
 				*rPlayerShouldMoveDown = true;
 				break;
 			}
 			break;
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym) {
-			case P1_UP_KEY:
+			case LPLAYER_UP_KEY:
 				*lPlayerShouldMoveUp = false;
 				break;
-			case P1_DOWN_KEY:
+			case LPLAYER_DOWN_KEY:
 				*lPlayerShouldMoveDown = false;
 				break;
-			case P2_UP_KEY:
+			case RPLAYER_UP_KEY:
 				*rPlayerShouldMoveUp = false;
 				break;
-			case P2_DOWN_KEY:
+			case RPLAYER_DOWN_KEY:
 				*rPlayerShouldMoveDown = false;
 				break;
 			}
