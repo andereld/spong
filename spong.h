@@ -111,8 +111,11 @@ void readPlayerInput(bool *running,
 /* move a player's paddle */
 void movePaddle(Court *court, Paddle *paddle, Direction direction);
 
-/* move the ball, checking for collisions and points scored */
+/* move the ball and handle collisions */
 void moveBall(Court *court, Ball *ball, Player *lPlayer, Player *rPlayer);
+
+/* check for points and update the score if appropriate */
+void updateScore(Ball *ball, Player *lPlayer, Player *rPlayer);
 
 /* serve the ball after a point is scored */
 void resetAndServe(Ball *ball, Direction direction);

@@ -106,6 +106,9 @@ int main(int argc, char *argv[])
 		moveBall(court, ball, lPlayer, rPlayer);
 
 		/* update the score */
+		updateScore(ball, lPlayer, rPlayer);
+
+		/* update the on-screen score */
 		if (lScore) SDL_FreeSurface(lScore);
 		snprintf(lScoreStr, 4, "%2d", lPlayer->points);
 		lScore = TTF_RenderText_Shaded(font, lScoreStr, fontColor,
@@ -302,10 +305,8 @@ void moveBall(Court *court, Ball *ball, Player *lPlayer, Player *rPlayer)
 			ball->vx = -ball->vx;
 			if (lPaddle->prevY != lPaddle->rect.y)
 				ball->vy += lPaddle->prevY - lPaddle->rect.y;
-		} else {
-			/* the right player scored a point */
-			rPlayer->points++;
-			resetAndServe(ball, LEFT);
+			/* make sure the ball isn't clipped by the paddle */
+			ball->rect.w = ball->rect.h = B_SIZE;
 		}
 	} else if (ball->rect.x+ball->rect.w >= rPaddle->rect.x
 			&& ball->vx > 0) {
@@ -318,10 +319,8 @@ void moveBall(Court *court, Ball *ball, Player *lPlayer, Player *rPlayer)
 			ball->vx = -ball->vx;
 			if (rPaddle->prevY != rPaddle->rect.y)
 				ball->vy += rPaddle->prevY - rPaddle->rect.y;
-		} else {
-			/* the left player scored a point */
-			lPlayer->points++;
-			resetAndServe(ball, RIGHT);
+			/* make sure the ball isn't clipped by the paddle */
+			ball->rect.w = ball->rect.h = B_SIZE;
 		}
 	}
 	if (ball->rect.y <= court->upperWall.y+court->upperWall.h
@@ -330,22 +329,39 @@ void moveBall(Court *court, Ball *ball, Player *lPlayer, Player *rPlayer)
 		ball->vy = -ball->vy;
 	}
 
-	/* make sure the ball isn't clipped by overlapping paddles */
-	ball->rect.w = ball->rect.h = B_SIZE;
-
 	/* actually move the ball */
 	ball->rect.x += ball->vx;
 	ball->rect.y += ball->vy;
 }
 
+void updateScore(Ball *ball, Player *lPlayer, Player *rPlayer)
+{
+	if (ball->rect.x >= C_X+C_WIDTH) {
+		/* lPlayer scored a point */
+		lPlayer->points++;
+		resetAndServe(ball, LEFT);
+	} else if (ball->rect.x+ball->rect.w <= C_X) {
+		/* rPlayer scored a point */
+		rPlayer->points++;
+		resetAndServe(ball, RIGHT);
+	}
+}
+
 void resetAndServe(Ball *ball, Direction direction)
 {
+	/* the ball will be clipped by the edge of the screen,
+	   so we have to set its width and height to the correct value */
+	ball->rect.w = ball->rect.h = B_SIZE;
+
+	/* center the ball on the court */
 	ball->rect.x = (C_X+C_WIDTH)/2 - B_SIZE/2;
 	ball->rect.y = (C_Y+C_HEIGHT)/2 - B_SIZE/2;
+
+	/* the winner serves */
 	ball->vy = 0;
-	if (direction == LEFT)
+	if (direction == RIGHT)
 		ball->vx = -B_VX;
-	else if (direction == RIGHT)
+	else if (direction == LEFT)
 		ball->vx = B_VX;
 }
 
