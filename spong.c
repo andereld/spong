@@ -6,9 +6,14 @@ int main(int argc, char *argv[])
 	if (SDL_Init(SDL_INIT_EVERYTHING) == -1) die();
 	if (TTF_Init() == -1) die();
 
+	/* set the height and width of the main window, as well as the number
+	   of bits per pixel; this needs to be done prior to initializing the 
+	   main window (*screen, below) */
+	initWindowAttributes();
+
 	/* the frame buffer */
 	SDL_Surface *screen = SDL_SetVideoMode(W_WIDTH, W_HEIGHT,
-			W_COLOR_DEPTH, SDL_SWSURFACE);
+			W_COLOR_DEPTH, SDL_HWSURFACE|SDL_FULLSCREEN);
 	if (!screen) die();
 
 	/* hide the mouse cursor */

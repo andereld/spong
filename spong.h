@@ -26,9 +26,17 @@
 #define RPLAYER_UP_KEY		SDLK_i
 #define RPLAYER_DOWN_KEY	SDLK_PERIOD
 
-#define W_WIDTH 1280		/* the width of the main window */
-#define W_HEIGHT 800		/* the height of the main window */
-#define W_COLOR_DEPTH 32	/* the number of bits per pixel */
+int W_WIDTH;		/* the width of the main window */
+int W_HEIGHT;		/* the height of the main window */
+int W_COLOR_DEPTH;	/* the number of bits per pixel */
+
+void initWindowAttributes()
+{
+	const SDL_VideoInfo *info = SDL_GetVideoInfo();
+	W_WIDTH = info->current_w;
+	W_HEIGHT = info->current_h;
+	W_COLOR_DEPTH = info->vfmt->BitsPerPixel;
+}
 
 #define C_X 0			/* the leftmost coordinate of the court */
 #define C_Y 0			/* the upper coordinate of the court */
